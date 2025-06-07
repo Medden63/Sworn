@@ -15,6 +15,7 @@ import { SettingsModal } from './components/settings/SettingsModal';
 import { Pencil, Trash } from 'lucide-react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useAudioPlayer } from './hooks/useAudioPlayer';
+import { useAutoRefresh } from './hooks/useAutoRefresh';
 import { User, Track, Playlist } from './types';
 import { extractMetadata } from './utils/metadata';
 
@@ -32,6 +33,8 @@ function App() {
   const [recentHistory, setRecentHistory] = useLocalStorage<Track[]>('sworn-recent', []);
 
   const { playerState, setQueue, loadTrack, play } = useAudioPlayer();
+  useAutoRefresh('sworn-tracks');
+  useAutoRefresh('sworn-playlists');
 
   useEffect(() => {
     const hash = new URLSearchParams(window.location.hash.slice(1));
