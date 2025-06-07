@@ -12,6 +12,7 @@ import { useAudioPlayer } from './hooks/useAudioPlayer';
 import { mockTracks, mockPlaylists } from './data/mockData';
 import { User, Track, Playlist } from './types';
 
+
 function App() {
   const [user, setUser] = useLocalStorage<User | null>('sworn-user', null);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -22,6 +23,55 @@ function App() {
   const [favorites, setFavorites] = useLocalStorage<string[]>('sworn-favorites', []);
 
   const { playerState, setQueue, loadTrack, play } = useAudioPlayer();
+
+  useEffect(() => {
+    const hash = new URLSearchParams(window.location.hash.slice(1));
+    const accessToken = hash.get('access_token');
+    const provider = localStorage.getItem('oauth-provider') as 'google' | 'dropbox' | null;
+
+    if (accessToken && provider && !user) {
+      const fetchUser = async () => {
+        try {
+          if (provider === 'google') {
+            const res = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+              headers: { Authorization: `Bearer ${accessToken}` }
+            });
+            const data = await res.json();
+            setUser({
+              id: data.id,
+              name: data.name,
+              email: data.email,
+              avatar: data.picture,
+              provider: 'google'
+            });
+          } else {
+            const res = await fetch('https://api.dropboxapi.com/2/users/get_current_account', {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            const data = await res.json();
+            setUser({
+              id: data.account_id,
+              name: data.name.display_name,
+              email: data.email,
+              avatar: data.profile_photo_url,
+              provider: 'dropbox'
+            });
+          }
+        } catch (err) {
+          console.error('OAuth callback error', err);
+        } finally {
+          localStorage.removeItem('oauth-provider');
+          window.location.hash = '';
+        }
+      };
+
+      fetchUser();
+    }
+  }, [setUser, user]);
 
   const getAudioDuration = (file: File): Promise<number> => {
     return new Promise(resolve => {
