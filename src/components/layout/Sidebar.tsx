@@ -5,10 +5,12 @@ import {
   Search, 
   Library, 
   Heart, 
-  Plus, 
+  Plus,
   Music,
   TrendingUp,
-  Clock
+  Clock,
+  Pencil,
+  Trash
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import { Playlist } from '../../types';
@@ -18,6 +20,8 @@ interface SidebarProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
   onCreatePlaylist: () => void;
+  onRenamePlaylist: (id: string) => void;
+  onDeletePlaylist: (id: string) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -25,6 +29,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeSection,
   onSectionChange,
   onCreatePlaylist,
+  onRenamePlaylist,
+  onDeletePlaylist,
 }) => {
   const navItems = [
     { id: 'home', label: 'Accueil', icon: Home },
@@ -86,24 +92,44 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         <div className="space-y-2">
           {playlists.map((playlist) => (
-            <motion.button
+            <motion.div
               key={playlist.id}
-              onClick={() => onSectionChange(`playlist-${playlist.id}`)}
-              className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
               whileHover={{ scale: 1.02 }}
             >
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center flex-shrink-0">
-                <Music className="w-5 h-5 text-white" />
+              <button
+                onClick={() => onSectionChange(`playlist-${playlist.id}`)}
+                className="flex items-center space-x-3 flex-1 text-left"
+              >
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center flex-shrink-0">
+                  <Music className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-gray-900 dark:text-white truncate">
+                    {playlist.name}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {playlist.tracks.length} titre{playlist.tracks.length > 1 ? 's' : ''}
+                  </p>
+                </div>
+              </button>
+              <div className="flex-shrink-0 flex space-x-1 opacity-0 group-hover:opacity-100">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={Pencil}
+                  ariaLabel="Renommer la playlist"
+                  onClick={() => onRenamePlaylist(playlist.id)}
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={Trash}
+                  ariaLabel="Supprimer la playlist"
+                  onClick={() => onDeletePlaylist(playlist.id)}
+                />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-900 dark:text-white truncate">
-                  {playlist.name}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {playlist.tracks.length} titre{playlist.tracks.length > 1 ? 's' : ''}
-                </p>
-              </div>
-            </motion.button>
+            </motion.div>
           ))}
 
           {playlists.length === 0 && (
