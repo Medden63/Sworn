@@ -83,7 +83,7 @@ export const Header: React.FC<HeaderProps> = ({
             <input
               id="file-upload"
               type="file"
-              accept=".mp3,.flac,.ogg"
+              accept=".mp3,.flac,.ogg,.wav"
               multiple
               className="hidden"
               onChange={(e) => {
