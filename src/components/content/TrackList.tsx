@@ -37,6 +37,14 @@ export const TrackList: React.FC<TrackListProps> = ({
               ${isCurrentTrack ? 'bg-primary-50 dark:bg-primary-900/20' : ''}
             `}
             onClick={() => onTrackSelect(track, index)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onTrackSelect(track, index);
+              }
+            }}
+            role="button"
+            tabIndex={0}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
             initial={{ opacity: 0, y: 20 }}
