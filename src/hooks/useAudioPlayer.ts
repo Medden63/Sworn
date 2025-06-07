@@ -214,9 +214,7 @@ export const useAudioPlayer = () => {
       if (!track) return;
       setPlayerState(prev => ({ ...prev, currentIndex: index }));
       loadTrack(track);
-      if (playerState.isPlaying) {
-        await play();
-      }
+      await play();
     },
     [playerState.queue, playerState.isPlaying, loadTrack, play]
   );
