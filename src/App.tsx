@@ -18,6 +18,7 @@ function App() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [isPlayerExpanded, setIsPlayerExpanded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [playlists, setPlaylists] = useLocalStorage<Playlist[]>('sworn-playlists', mockPlaylists);
   const [tracks, setTracks] = useLocalStorage<Track[]>('sworn-tracks', mockTracks);
   const [favorites, setFavorites] = useLocalStorage<string[]>('sworn-favorites', []);
@@ -228,14 +229,33 @@ function App() {
     );
   };
 
+  const filterTracks = (list: Track[]) => {
+    if (!searchQuery.trim()) return list;
+    const q = searchQuery.toLowerCase();
+    return list.filter(t =>
+      t.title.toLowerCase().includes(q) ||
+      t.artist.toLowerCase().includes(q) ||
+      (t.album && t.album.toLowerCase().includes(q))
+    );
+  };
+
+  const filterPlaylists = (list: Playlist[]) => {
+    if (!searchQuery.trim()) return list;
+    const q = searchQuery.toLowerCase();
+    return list.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      (p.description && p.description.toLowerCase().includes(q))
+    );
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'home':
         return (
           <HomeContent
-            recentTracks={tracks.slice(0, 5)}
-            trendingTracks={tracks}
-            playlists={playlists}
+            recentTracks={filterTracks(tracks).slice(0, 5)}
+            trendingTracks={filterTracks(tracks)}
+            playlists={filterPlaylists(playlists)}
             currentTrack={playerState.currentTrack}
             isPlaying={playerState.isPlaying}
             onTrackSelect={handleTrackSelect}
@@ -245,7 +265,9 @@ function App() {
         );
       
       case 'favorites':
-        const favoriteTracks = tracks.filter(track => favorites.includes(track.id));
+        const favoriteTracks = filterTracks(
+          tracks.filter(track => favorites.includes(track.id))
+        );
         return (
           <div className="space-y-6">
             <div className="bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl p-8 text-white">
@@ -278,7 +300,7 @@ function App() {
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
               <TrackList
-                tracks={tracks}
+                tracks={filterTracks(tracks)}
                 currentTrack={playerState.currentTrack}
                 isPlaying={playerState.isPlaying}
                 onTrackSelect={(track, index) => handleTrackSelect(track, tracks)}
@@ -328,7 +350,7 @@ function App() {
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
                   <TrackList
-                    tracks={playlist.tracks}
+                    tracks={filterTracks(playlist.tracks)}
                     currentTrack={playerState.currentTrack}
                     isPlaying={playerState.isPlaying}
                     onTrackSelect={(track, index) => handleTrackSelect(track, playlist.tracks)}
@@ -353,9 +375,9 @@ function App() {
         
         return (
           <HomeContent
-            recentTracks={tracks.slice(0, 5)}
-            trendingTracks={tracks}
-            playlists={playlists}
+            recentTracks={filterTracks(tracks).slice(0, 5)}
+            trendingTracks={filterTracks(tracks)}
+            playlists={filterPlaylists(playlists)}
             currentTrack={playerState.currentTrack}
             isPlaying={playerState.isPlaying}
             onTrackSelect={handleTrackSelect}
@@ -373,11 +395,12 @@ function App() {
         onAuthClick={() => setShowAuthModal(true)}
         onLogout={handleLogout}
         onFilesSelected={handleFilesSelected}
+        onSearchChange={setSearchQuery}
       />
 
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
-          playlists={playlists}
+          playlists={filterPlaylists(playlists)}
           activeSection={activeSection}
           onSectionChange={setActiveSection}
           onCreatePlaylist={handleCreatePlaylist}

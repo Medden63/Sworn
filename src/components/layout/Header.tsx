@@ -20,6 +20,7 @@ interface HeaderProps {
   onAuthClick: () => void;
   onLogout: () => void;
   onFilesSelected: (files: FileList) => void;
+  onSearchChange: (query: string) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -27,6 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
   onAuthClick,
   onLogout,
   onFilesSelected,
+  onSearchChange,
 }) => {
   const { theme, changeTheme } = useTheme();
   const [showUserMenu, setShowUserMenu] = React.useState(false);
@@ -72,6 +74,7 @@ export const Header: React.FC<HeaderProps> = ({
                 placeholder="Rechercher musiques, artistes, albums..."
                 className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-800 border border-transparent rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 aria-label="Rechercher"
+                onChange={(e) => onSearchChange(e.target.value)}
               />
             </div>
             <label htmlFor="file-upload" className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer">
