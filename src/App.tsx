@@ -8,6 +8,9 @@ import { HomeContent } from './components/content/HomeContent';
 import { TrackList } from './components/content/TrackList';
 import { PlaylistsPage } from './components/content/PlaylistsPage';
 import { PlaylistPage } from './components/content/PlaylistPage';
+import { SearchPage } from './components/content/SearchPage';
+import { TrendingPage } from './components/content/TrendingPage';
+import { RecentPage } from './components/content/RecentPage';
 import { SettingsModal } from './components/settings/SettingsModal';
 import { Pencil, Trash } from 'lucide-react';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -26,6 +29,7 @@ function App() {
   const [playlists, setPlaylists] = useLocalStorage<Playlist[]>('sworn-playlists', []);
   const [tracks, setTracks] = useLocalStorage<Track[]>('sworn-tracks', []);
   const [favorites, setFavorites] = useLocalStorage<string[]>('sworn-favorites', []);
+  const [recentHistory, setRecentHistory] = useLocalStorage<Track[]>('sworn-recent', []);
 
   const { playerState, setQueue, loadTrack, play } = useAudioPlayer();
 
@@ -138,6 +142,10 @@ function App() {
     const trackIndex = trackList.findIndex(t => t.id === track.id);
     setQueue(trackList, trackIndex);
     setTimeout(() => play(), 100);
+    setRecentHistory(prev => {
+      const filtered = prev.filter(t => t.id !== track.id);
+      return [track, ...filtered].slice(0, 20);
+    });
   };
 
   const handleToggleFavorite = (trackId: string) => {
@@ -272,6 +280,42 @@ function App() {
             onTrackSelect={handleTrackSelect}
             onToggleFavorite={handleToggleFavorite}
             onPlaylistSelect={handlePlaylistSelect}
+          />
+        );
+
+      case 'search':
+        const searchTracks = filterTracks(tracks);
+        return (
+          <SearchPage
+            query={searchQuery}
+            tracks={searchTracks}
+            currentTrack={playerState.currentTrack}
+            isPlaying={playerState.isPlaying}
+            onTrackSelect={(track, index) => handleTrackSelect(track, searchTracks)}
+            onToggleFavorite={handleToggleFavorite}
+          />
+        );
+
+      case 'recent':
+        return (
+          <RecentPage
+            tracks={filterTracks(recentHistory)}
+            currentTrack={playerState.currentTrack}
+            isPlaying={playerState.isPlaying}
+            onTrackSelect={(track, index) => handleTrackSelect(track, recentHistory)}
+            onToggleFavorite={handleToggleFavorite}
+          />
+        );
+
+      case 'trending':
+        const trendTracks = filterTracks(tracks);
+        return (
+          <TrendingPage
+            tracks={trendTracks}
+            currentTrack={playerState.currentTrack}
+            isPlaying={playerState.isPlaying}
+            onTrackSelect={(track, index) => handleTrackSelect(track, trendTracks)}
+            onToggleFavorite={handleToggleFavorite}
           />
         );
       
