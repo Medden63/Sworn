@@ -13,6 +13,7 @@ import { Pencil, Trash } from 'lucide-react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useAudioPlayer } from './hooks/useAudioPlayer';
 import { User, Track, Playlist } from './types';
+import { extractMetadata } from './utils/metadata';
 
 
 function App() {
@@ -93,12 +94,15 @@ function App() {
   const handleFilesSelected = async (files: FileList) => {
     const newTracks: Track[] = [];
     for (const file of Array.from(files)) {
-      const duration = await getAudioDuration(file);
+      const [duration, meta] = await Promise.all([
+        getAudioDuration(file),
+        extractMetadata(file),
+      ]);
       newTracks.push({
         id: `local-${Date.now()}-${Math.random()}`,
-        title: file.name.replace(/\.[^/.]+$/, ''),
-        artist: 'Local',
-        album: 'Local Files',
+        title: meta.title || file.name.replace(/\.[^/.]+$/, ''),
+        artist: meta.artist || 'Local',
+        album: meta.album || 'Local Files',
         duration,
         url: URL.createObjectURL(file),
         isFavorite: false,
