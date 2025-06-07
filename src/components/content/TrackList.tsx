@@ -1,6 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Play, Pause, Heart, MoreHorizontal } from 'lucide-react';
+import {
+  Play,
+  Pause,
+  Heart,
+  MoreHorizontal,
+  Pencil,
+  Trash,
+  ArrowUp,
+  ArrowDown,
+} from 'lucide-react';
 import { Track } from '../../types';
 import { formatTime } from '../../utils/format';
 import { Button } from '../common/Button';
@@ -13,6 +22,10 @@ interface TrackListProps {
   onToggleFavorite: (trackId: string) => void;
   showAlbum?: boolean;
   showArtwork?: boolean;
+  onRenameTrack?: (trackId: string) => void;
+  onRemoveTrack?: (trackId: string) => void;
+  onMoveTrackUp?: (index: number) => void;
+  onMoveTrackDown?: (index: number) => void;
 }
 
 export const TrackList: React.FC<TrackListProps> = ({
@@ -23,6 +36,10 @@ export const TrackList: React.FC<TrackListProps> = ({
   onToggleFavorite,
   showAlbum = true,
   showArtwork = true,
+  onRenameTrack,
+  onRemoveTrack,
+  onMoveTrackUp,
+  onMoveTrackDown,
 }) => {
   return (
     <div className="space-y-1">
@@ -122,11 +139,11 @@ export const TrackList: React.FC<TrackListProps> = ({
                 }`}
                 ariaLabel={track.isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
               />
-              
+
               <span className="text-sm text-gray-500 dark:text-gray-400 w-12 text-right">
                 {formatTime(track.duration)}
               </span>
-              
+
               <Button
                 variant="ghost"
                 size="sm"
@@ -135,6 +152,62 @@ export const TrackList: React.FC<TrackListProps> = ({
                 onClick={(e) => e.stopPropagation()}
                 ariaLabel="Plus d'options"
               />
+
+              {onMoveTrackUp && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={ArrowUp}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onMoveTrackUp(index);
+                  }}
+                  ariaLabel="Monter le titre"
+                />
+              )}
+
+              {onMoveTrackDown && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={ArrowDown}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onMoveTrackDown(index);
+                  }}
+                  ariaLabel="Descendre le titre"
+                />
+              )}
+
+              {onRenameTrack && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={Pencil}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRenameTrack(track.id);
+                  }}
+                  ariaLabel="Renommer le titre"
+                />
+              )}
+
+              {onRemoveTrack && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={Trash}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveTrack(track.id);
+                  }}
+                  ariaLabel="Supprimer le titre"
+                />
+              )}
             </div>
           </motion.div>
         );

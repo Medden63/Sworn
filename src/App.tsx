@@ -6,6 +6,7 @@ import { Player } from './components/player/Player';
 import { AuthModal } from './components/auth/AuthModal';
 import { HomeContent } from './components/content/HomeContent';
 import { TrackList } from './components/content/TrackList';
+import { Pencil, Trash } from 'lucide-react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useAudioPlayer } from './hooks/useAudioPlayer';
 import { mockTracks, mockPlaylists } from './data/mockData';
@@ -71,6 +72,72 @@ function App() {
 
   const handlePlaylistSelect = (playlist: Playlist) => {
     setActiveSection(`playlist-${playlist.id}`);
+  };
+
+  const handleRenamePlaylist = (playlistId: string, name: string) => {
+    setPlaylists(prev =>
+      prev.map(p =>
+        p.id === playlistId ? { ...p, name, updatedAt: new Date() } : p
+      )
+    );
+  };
+
+  const handleDeletePlaylist = (playlistId: string) => {
+    setPlaylists(prev => prev.filter(p => p.id !== playlistId));
+    if (activeSection === `playlist-${playlistId}`) {
+      setActiveSection('home');
+    }
+  };
+
+  const handleRenameTrack = (
+    playlistId: string,
+    trackId: string,
+    title: string
+  ) => {
+    setPlaylists(prev =>
+      prev.map(p =>
+        p.id === playlistId
+          ? {
+              ...p,
+              tracks: p.tracks.map(t =>
+                t.id === trackId ? { ...t, title } : t
+              ),
+              updatedAt: new Date(),
+            }
+          : p
+      )
+    );
+  };
+
+  const handleRemoveTrack = (playlistId: string, trackId: string) => {
+    setPlaylists(prev =>
+      prev.map(p =>
+        p.id === playlistId
+          ? {
+              ...p,
+              tracks: p.tracks.filter(t => t.id !== trackId),
+              updatedAt: new Date(),
+            }
+          : p
+      )
+    );
+  };
+
+  const handleReorderTracks = (
+    playlistId: string,
+    from: number,
+    to: number
+  ) => {
+    if (from === to) return;
+    setPlaylists(prev =>
+      prev.map(p => {
+        if (p.id !== playlistId) return p;
+        const updated = [...p.tracks];
+        const [moved] = updated.splice(from, 1);
+        updated.splice(to, 0, moved);
+        return { ...p, tracks: updated, updatedAt: new Date() };
+      })
+    );
   };
 
   const renderContent = () => {
@@ -142,11 +209,34 @@ function App() {
           if (playlist) {
             return (
               <div className="space-y-6">
-                <div className="bg-gradient-to-r from-primary-500 to-accent-500 rounded-2xl p-8 text-white">
-                  <h1 className="text-3xl font-bold mb-2">{playlist.name}</h1>
-                  <p className="text-primary-100">
-                    {playlist.description} • {playlist.tracks.length} titre{playlist.tracks.length > 1 ? 's' : ''}
-                  </p>
+                <div className="bg-gradient-to-r from-primary-500 to-accent-500 rounded-2xl p-8 text-white flex items-start justify-between">
+                  <div>
+                    <h1 className="text-3xl font-bold mb-2">{playlist.name}</h1>
+                    <p className="text-primary-100">
+                      {playlist.description} • {playlist.tracks.length} titre{playlist.tracks.length > 1 ? 's' : ''}
+                    </p>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon={Pencil}
+                      onClick={() => {
+                        const name = prompt('Nouveau nom de la playlist ?');
+                        if (name) handleRenamePlaylist(playlist.id, name);
+                      }}
+                      ariaLabel="Renommer la playlist"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon={Trash}
+                      onClick={() => {
+                        if (confirm('Supprimer cette playlist ?')) handleDeletePlaylist(playlist.id);
+                      }}
+                      ariaLabel="Supprimer la playlist"
+                    />
+                  </div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
                   <TrackList
@@ -156,6 +246,15 @@ function App() {
                     onTrackSelect={(track, index) => handleTrackSelect(track, playlist.tracks)}
                     onToggleFavorite={handleToggleFavorite}
                     showArtwork={true}
+                    onRenameTrack={(trackId) => {
+                      const title = prompt('Nouveau titre ?');
+                      if (title) handleRenameTrack(playlist.id, trackId, title);
+                    }}
+                    onRemoveTrack={(trackId) => {
+                      if (confirm('Supprimer ce titre ?')) handleRemoveTrack(playlist.id, trackId);
+                    }}
+                    onMoveTrackUp={(index) => handleReorderTracks(playlist.id, index, Math.max(0, index - 1))}
+                    onMoveTrackDown={(index) => handleReorderTracks(playlist.id, index, Math.min(playlist.tracks.length - 1, index + 1))}
                   />
                 </div>
               </div>
@@ -192,6 +291,13 @@ function App() {
           activeSection={activeSection}
           onSectionChange={setActiveSection}
           onCreatePlaylist={handleCreatePlaylist}
+          onRenamePlaylist={(id) => {
+            const name = prompt('Nouveau nom de la playlist ?');
+            if (name) handleRenamePlaylist(id, name);
+          }}
+          onDeletePlaylist={(id) => {
+            if (confirm('Supprimer cette playlist ?')) handleDeletePlaylist(id);
+          }}
         />
 
         <main className="flex-1 overflow-auto">
