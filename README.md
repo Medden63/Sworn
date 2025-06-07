@@ -23,7 +23,8 @@ yarn dev
 ```
 
 Create a `.env` file from `.env.example` and provide your OAuth client IDs for
-Google and Dropbox.
+Google and Dropbox. The `.env.example` file contains placeholder values that you
+can copy and modify with your own credentials.
 
 ## Building for Production
 
