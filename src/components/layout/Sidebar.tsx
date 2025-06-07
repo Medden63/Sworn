@@ -36,6 +36,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'home', label: 'Accueil', icon: Home },
     { id: 'search', label: 'Rechercher', icon: Search },
     { id: 'library', label: 'Bibliothèque', icon: Library },
+    { id: 'playlists', label: 'Playlists', icon: Music },
     { id: 'favorites', label: 'Favoris', icon: Heart },
     { id: 'trending', label: 'Tendances', icon: TrendingUp },
     { id: 'recent', label: 'Récemment joués', icon: Clock },
