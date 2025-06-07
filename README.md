@@ -22,6 +22,9 @@ npm run dev
 yarn dev
 ```
 
+Create a `.env` file from `.env.example` and provide your OAuth client IDs for
+Google and Dropbox.
+
 ## Building for Production
 
 Create an optimized build:

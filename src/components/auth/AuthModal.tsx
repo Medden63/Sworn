@@ -44,21 +44,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   const handleSocialAuth = (provider: 'google' | 'dropbox') => {
-    setLoading(true);
-    
-    // Simulate social auth
-    setTimeout(() => {
-      const user = {
-        id: '1',
-        name: `Utilisateur ${provider}`,
-        email: `user@${provider}.com`,
-        provider,
-      };
-      
-      onAuthSuccess(user);
-      setLoading(false);
-      onClose();
-    }, 1000);
+    const redirectUri = window.location.origin;
+
+    if (provider === 'google') {
+      const url =
+        `https://accounts.google.com/o/oauth2/v2/auth?client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}` +
+        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+        `&response_type=token&scope=profile%20email&state=google`;
+      localStorage.setItem('oauth-provider', 'google');
+      window.location.href = url;
+    } else {
+      const url =
+        `https://www.dropbox.com/oauth2/authorize?response_type=token&client_id=${import.meta.env.VITE_DROPBOX_CLIENT_ID}` +
+        `&redirect_uri=${encodeURIComponent(redirectUri)}&state=dropbox`;
+      localStorage.setItem('oauth-provider', 'dropbox');
+      window.location.href = url;
+    }
   };
 
   return (
