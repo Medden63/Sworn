@@ -5,7 +5,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'Montserrat', 'system-ui', 'sans-serif'],
+        display: ['Montserrat', 'Inter', 'sans-serif'],
       },
       colors: {
         primary: {
