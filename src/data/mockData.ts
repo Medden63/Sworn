@@ -1,0 +1,75 @@
+import { Track, Playlist } from '../types';
+
+export const mockTracks: Track[] = [
+  {
+    id: '1',
+    title: 'Midnight Waves',
+    artist: 'Luna Echo',
+    album: 'Ocean Dreams',
+    duration: 243,
+    url: 'https://www.soundjay.com/misc/sounds/magic-chime-02.mp3',
+    artwork: 'https://images.pexels.com/photos/1699161/pexels-photo-1699161.jpeg?auto=compress&cs=tinysrgb&w=400',
+    isFavorite: false,
+  },
+  {
+    id: '2',
+    title: 'Electric Sunset',
+    artist: 'Synth Masters',
+    album: 'Neon Nights',
+    duration: 198,
+    url: 'https://www.soundjay.com/misc/sounds/magic-chime-02.mp3',
+    artwork: 'https://images.pexels.com/photos/1370545/pexels-photo-1370545.jpeg?auto=compress&cs=tinysrgb&w=400',
+    isFavorite: true,
+  },
+  {
+    id: '3',
+    title: 'Digital Rain',
+    artist: 'Cyber Dreams',
+    album: 'Future Echoes',
+    duration: 267,
+    url: 'https://www.soundjay.com/misc/sounds/magic-chime-02.mp3',
+    artwork: 'https://images.pexels.com/photos/1054713/pexels-photo-1054713.jpeg?auto=compress&cs=tinysrgb&w=400',
+    isFavorite: false,
+  },
+  {
+    id: '4',
+    title: 'Astral Journey',
+    artist: 'Space Voyager',
+    album: 'Cosmic Tales',
+    duration: 289,
+    url: 'https://www.soundjay.com/misc/sounds/magic-chime-02.mp3',
+    artwork: 'https://images.pexels.com/photos/1274260/pexels-photo-1274260.jpeg?auto=compress&cs=tinysrgb&w=400',
+    isFavorite: true,
+  },
+  {
+    id: '5',
+    title: 'Urban Pulse',
+    artist: 'City Lights',
+    album: 'Metropolitan',
+    duration: 221,
+    url: 'https://www.soundjay.com/misc/sounds/magic-chime-02.mp3',
+    artwork: 'https://images.pexels.com/photos/1120872/pexels-photo-1120872.jpeg?auto=compress&cs=tinysrgb&w=400',
+    isFavorite: false,
+  },
+];
+
+export const mockPlaylists: Playlist[] = [
+  {
+    id: '1',
+    name: 'Chill Vibes',
+    description: 'Perfect for relaxing evenings',
+    tracks: [mockTracks[0], mockTracks[2]],
+    artwork: 'https://images.pexels.com/photos/1699161/pexels-photo-1699161.jpeg?auto=compress&cs=tinysrgb&w=400',
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-20'),
+  },
+  {
+    id: '2',
+    name: 'Electronic Dreams',
+    description: 'The best of electronic music',
+    tracks: [mockTracks[1], mockTracks[3], mockTracks[4]],
+    artwork: 'https://images.pexels.com/photos/1370545/pexels-photo-1370545.jpeg?auto=compress&cs=tinysrgb&w=400',
+    createdAt: new Date('2024-01-10'),
+    updatedAt: new Date('2024-01-25'),
+  },
+];
