@@ -190,6 +190,12 @@ function App() {
   };
 
   const handleRemoveTrack = (playlistId: string, trackId: string) => {
+    const playlist = playlists.find(p => p.id === playlistId);
+    const track = playlist?.tracks.find(t => t.id === trackId);
+    if (track && track.url.startsWith('blob:')) {
+      URL.revokeObjectURL(track.url);
+    }
+
     setPlaylists(prev =>
       prev.map(p =>
         p.id === playlistId
@@ -201,6 +207,8 @@ function App() {
           : p
       )
     );
+
+    setTracks(prev => prev.filter(t => t.id !== trackId));
   };
 
   const handleReorderTracks = (
