@@ -9,6 +9,7 @@ import {
   Music,
   TrendingUp,
   Clock,
+  PlusCircle,
   Pencil,
   Trash
 } from 'lucide-react';
@@ -40,6 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'favorites', label: 'Favoris', icon: Heart },
     { id: 'trending', label: 'Tendances', icon: TrendingUp },
     { id: 'recent', label: 'Récemment joués', icon: Clock },
+    { id: 'added', label: 'Ajoutés récemment', icon: PlusCircle },
   ];
 
   return (
