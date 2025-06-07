@@ -23,6 +23,36 @@ function App() {
 
   const { playerState, setQueue, loadTrack, play } = useAudioPlayer();
 
+  const getAudioDuration = (file: File): Promise<number> => {
+    return new Promise(resolve => {
+      const audio = document.createElement('audio');
+      audio.preload = 'metadata';
+      audio.src = URL.createObjectURL(file);
+      audio.onloadedmetadata = () => {
+        const duration = isNaN(audio.duration) ? 0 : audio.duration;
+        URL.revokeObjectURL(audio.src);
+        resolve(duration);
+      };
+    });
+  };
+
+  const handleFilesSelected = async (files: FileList) => {
+    const newTracks: Track[] = [];
+    for (const file of Array.from(files)) {
+      const duration = await getAudioDuration(file);
+      newTracks.push({
+        id: `local-${Date.now()}-${Math.random()}`,
+        title: file.name.replace(/\.[^/.]+$/, ''),
+        artist: 'Local',
+        album: 'Local Files',
+        duration,
+        url: URL.createObjectURL(file),
+        isFavorite: false,
+      });
+    }
+    setTracks(prev => [...prev, ...newTracks]);
+  };
+
   // Update track favorites based on stored favorites
   useEffect(() => {
     const updatedTracks = tracks.map(track => ({
@@ -283,6 +313,7 @@ function App() {
         user={user}
         onAuthClick={() => setShowAuthModal(true)}
         onLogout={handleLogout}
+        onFilesSelected={handleFilesSelected}
       />
 
       <div className="flex flex-1 overflow-hidden">

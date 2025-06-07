@@ -1,14 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Search, 
-  Sun, 
-  Moon, 
-  Monitor, 
-  User, 
-  Settings, 
+import {
+  Search,
+  Sun,
+  Moon,
+  Monitor,
+  User,
+  Settings,
   LogOut,
-  Music
+  Music,
+  Upload
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import { useTheme } from '../../hooks/useTheme';
@@ -18,9 +19,15 @@ interface HeaderProps {
   user: UserType | null;
   onAuthClick: () => void;
   onLogout: () => void;
+  onFilesSelected: (files: FileList) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ user, onAuthClick, onLogout }) => {
+export const Header: React.FC<HeaderProps> = ({
+  user,
+  onAuthClick,
+  onLogout,
+  onFilesSelected,
+}) => {
   const { theme, changeTheme } = useTheme();
   const [showUserMenu, setShowUserMenu] = React.useState(false);
 
@@ -57,8 +64,8 @@ export const Header: React.FC<HeaderProps> = ({ user, onAuthClick, onLogout }) =
           </motion.div>
 
           {/* Search Bar */}
-          <div className="flex-1 max-w-lg mx-8">
-            <div className="relative">
+          <div className="flex-1 max-w-lg mx-8 flex items-center space-x-2">
+            <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
@@ -67,6 +74,22 @@ export const Header: React.FC<HeaderProps> = ({ user, onAuthClick, onLogout }) =
                 aria-label="Rechercher"
               />
             </div>
+            <label htmlFor="file-upload" className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer">
+              <Upload className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+            </label>
+            <input
+              id="file-upload"
+              type="file"
+              accept=".mp3,.flac,.ogg"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                if (e.target.files) {
+                  onFilesSelected(e.target.files);
+                  e.target.value = '';
+                }
+              }}
+            />
           </div>
 
           {/* Actions */}
