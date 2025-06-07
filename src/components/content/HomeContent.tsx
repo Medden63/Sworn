@@ -68,6 +68,14 @@ export const HomeContent: React.FC<HomeContentProps> = ({
                 className="bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer group"
                 whileHover={{ scale: 1.02 }}
                 onClick={() => onPlaylistSelect(playlist)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onPlaylistSelect(playlist);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
               >
