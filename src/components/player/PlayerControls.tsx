@@ -6,10 +6,11 @@ import {
   SkipBack, 
   SkipForward, 
   Shuffle, 
-  Repeat, 
-  Volume2, 
+  Repeat,
+  Volume2,
   VolumeX,
-  Heart 
+  Heart,
+  ListMusic
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import { formatTime } from '../../utils/format';
@@ -32,6 +33,8 @@ interface PlayerControlsProps {
   onToggleShuffle: () => void;
   onToggleRepeat: () => void;
   onToggleFavorite?: () => void;
+  isQueueVisible?: boolean;
+  onToggleQueue?: () => void;
 }
 
 export const PlayerControls: React.FC<PlayerControlsProps> = ({
@@ -52,6 +55,8 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
   onToggleShuffle,
   onToggleRepeat,
   onToggleFavorite,
+  isQueueVisible = false,
+  onToggleQueue,
 }) => {
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
@@ -152,6 +157,18 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
             onClick={onToggleFavorite}
             className={isFavorite ? 'text-red-500' : 'text-gray-400'}
             ariaLabel={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+          />
+        )}
+
+        {/* Queue Toggle */}
+        {onToggleQueue && (
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={ListMusic}
+            onClick={onToggleQueue}
+            className={isQueueVisible ? 'text-primary-600' : 'text-gray-400'}
+            ariaLabel="File de lecture"
           />
         )}
 

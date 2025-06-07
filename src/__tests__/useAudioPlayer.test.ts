@@ -53,4 +53,15 @@ describe('useAudioPlayer', () => {
     });
     expect(result.current.playerState.isPlaying).toBe(false);
   });
+
+  it('plays track at index from queue', async () => {
+    const { result } = renderHook(() => useAudioPlayer());
+    act(() => {
+      result.current.setQueue([track], 0);
+    });
+    await act(() => result.current.playTrackAtIndex(0));
+    expect(result.current.playerState.currentIndex).toBe(0);
+    expect(result.current.playerState.currentTrack).toEqual(track);
+    expect(result.current.playerState.isPlaying).toBe(true);
+  });
 });
