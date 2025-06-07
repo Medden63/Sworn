@@ -21,6 +21,7 @@ interface HeaderProps {
   onLogout: () => void;
   onFilesSelected: (files: FileList) => void;
   onSearchChange: (query: string) => void;
+  onSettingsClick: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -29,6 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   onLogout,
   onFilesSelected,
   onSearchChange,
+  onSettingsClick,
 }) => {
   const { theme, changeTheme } = useTheme();
   const [showUserMenu, setShowUserMenu] = React.useState(false);
@@ -133,7 +135,7 @@ export const Header: React.FC<HeaderProps> = ({
                       <User className="w-4 h-4" />
                       <span>Profil</span>
                     </button>
-                    <button className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <button onClick={() => { setShowUserMenu(false); onSettingsClick(); }} className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                       <Settings className="w-4 h-4" />
                       <span>Paramètres</span>
                     </button>
