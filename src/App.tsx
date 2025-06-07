@@ -91,10 +91,20 @@ function App() {
       const audio = document.createElement('audio');
       audio.preload = 'metadata';
       audio.src = URL.createObjectURL(file);
+
+      const cleanup = () => {
+        URL.revokeObjectURL(audio.src);
+      };
+
       audio.onloadedmetadata = () => {
         const duration = isNaN(audio.duration) ? 0 : audio.duration;
-        URL.revokeObjectURL(audio.src);
+        cleanup();
         resolve(duration);
+      };
+
+      audio.onerror = () => {
+        cleanup();
+        resolve(0);
       };
     });
   };
