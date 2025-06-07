@@ -6,11 +6,12 @@ import { Player } from './components/player/Player';
 import { AuthModal } from './components/auth/AuthModal';
 import { HomeContent } from './components/content/HomeContent';
 import { TrackList } from './components/content/TrackList';
+import { PlaylistsPage } from './components/content/PlaylistsPage';
+import { PlaylistPage } from './components/content/PlaylistPage';
 import { SettingsModal } from './components/settings/SettingsModal';
 import { Pencil, Trash } from 'lucide-react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useAudioPlayer } from './hooks/useAudioPlayer';
-import { mockTracks, mockPlaylists } from './data/mockData';
 import { User, Track, Playlist } from './types';
 
 
@@ -21,8 +22,8 @@ function App() {
   const [activeSection, setActiveSection] = useState('home');
   const [isPlayerExpanded, setIsPlayerExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [playlists, setPlaylists] = useLocalStorage<Playlist[]>('sworn-playlists', mockPlaylists);
-  const [tracks, setTracks] = useLocalStorage<Track[]>('sworn-tracks', mockTracks);
+  const [playlists, setPlaylists] = useLocalStorage<Playlist[]>('sworn-playlists', []);
+  const [tracks, setTracks] = useLocalStorage<Track[]>('sworn-tracks', []);
   const [favorites, setFavorites] = useLocalStorage<string[]>('sworn-favorites', []);
 
   const { playerState, setQueue, loadTrack, play } = useAudioPlayer();
@@ -316,65 +317,42 @@ function App() {
             </div>
           </div>
         );
-      
+
+      case 'playlists':
+        return (
+          <PlaylistsPage
+            playlists={filterPlaylists(playlists)}
+            onSelect={handlePlaylistSelect}
+            onCreate={handleCreatePlaylist}
+          />
+        );
+
       default:
         if (activeSection.startsWith('playlist-')) {
           const playlistId = activeSection.replace('playlist-', '');
           const playlist = playlists.find(p => p.id === playlistId);
-          
+
           if (playlist) {
             return (
-              <div className="space-y-6">
-                <div className="bg-gradient-to-r from-primary-500 to-accent-500 rounded-2xl p-8 text-white flex items-start justify-between">
-                  <div>
-                    <h1 className="text-3xl font-bold mb-2">{playlist.name}</h1>
-                    <p className="text-primary-100">
-                      {playlist.description} • {playlist.tracks.length} titre{playlist.tracks.length > 1 ? 's' : ''}
-                    </p>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      icon={Pencil}
-                      onClick={() => {
-                        const name = prompt('Nouveau nom de la playlist ?');
-                        if (name) handleRenamePlaylist(playlist.id, name);
-                      }}
-                      ariaLabel="Renommer la playlist"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      icon={Trash}
-                      onClick={() => {
-                        if (confirm('Supprimer cette playlist ?')) handleDeletePlaylist(playlist.id);
-                      }}
-                      ariaLabel="Supprimer la playlist"
-                    />
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
-                  <TrackList
-                    tracks={filterTracks(playlist.tracks)}
-                    currentTrack={playerState.currentTrack}
-                    isPlaying={playerState.isPlaying}
-                    onTrackSelect={(track, index) => handleTrackSelect(track, playlist.tracks)}
-                    onToggleFavorite={handleToggleFavorite}
-                    showArtwork={true}
-                    onRenameTrack={(trackId) => {
-                      const title = prompt('Nouveau titre ?');
-                      if (title) handleRenameTrack(playlist.id, trackId, title);
-                    }}
-                    onRemoveTrack={(trackId) => {
-                      if (confirm('Supprimer ce titre ?')) handleRemoveTrack(playlist.id, trackId);
-                    }}
-                    onMoveTrackUp={(index) => handleReorderTracks(playlist.id, index, Math.max(0, index - 1))}
-                    onMoveTrackDown={(index) => handleReorderTracks(playlist.id, index, Math.min(playlist.tracks.length - 1, index + 1))}
-                    onReorder={(from, to) => handleReorderTracks(playlist.id, from, to)}
-                  />
-                </div>
-              </div>
+              <PlaylistPage
+                playlist={{ ...playlist, tracks: filterTracks(playlist.tracks) }}
+                currentTrack={playerState.currentTrack}
+                isPlaying={playerState.isPlaying}
+                onTrackSelect={(track, index) => handleTrackSelect(track, playlist.tracks)}
+                onToggleFavorite={handleToggleFavorite}
+                onRenamePlaylist={handleRenamePlaylist}
+                onDeletePlaylist={handleDeletePlaylist}
+                onRenameTrack={(trackId) => {
+                  const title = prompt('Nouveau titre ?');
+                  if (title) handleRenameTrack(playlist.id, trackId, title);
+                }}
+                onRemoveTrack={(trackId) => {
+                  if (confirm('Supprimer ce titre ?')) handleRemoveTrack(playlist.id, trackId);
+                }}
+                onMoveTrackUp={(index) => handleReorderTracks(playlist.id, index, Math.max(0, index - 1))}
+                onMoveTrackDown={(index) => handleReorderTracks(playlist.id, index, Math.min(playlist.tracks.length - 1, index + 1))}
+                onReorderTracks={(from, to) => handleReorderTracks(playlist.id, from, to)}
+              />
             );
           }
         }
