@@ -1,6 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from 'react-beautiful-dnd';
+import {
   Play,
   Pause,
   Heart,
@@ -26,6 +32,7 @@ interface TrackListProps {
   onRemoveTrack?: (trackId: string) => void;
   onMoveTrackUp?: (index: number) => void;
   onMoveTrackDown?: (index: number) => void;
+  onReorder?: (from: number, to: number) => void;
 }
 
 export const TrackList: React.FC<TrackListProps> = ({
@@ -40,15 +47,31 @@ export const TrackList: React.FC<TrackListProps> = ({
   onRemoveTrack,
   onMoveTrackUp,
   onMoveTrackDown,
+  onReorder,
 }) => {
+  const handleDragEnd = (result: DropResult) => {
+    if (!onReorder || !result.destination) return;
+    onReorder(result.source.index, result.destination.index);
+  };
   return (
-    <div className="space-y-1">
-      {tracks.map((track, index) => {
-        const isCurrentTrack = currentTrack?.id === track.id;
-        
-        return (
-          <motion.div
-            key={track.id}
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId="track-list">
+        {(provided) => (
+          <div
+            className="space-y-1"
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+          >
+            {tracks.map((track, index) => {
+            const isCurrentTrack = currentTrack?.id === track.id;
+
+            return (
+              <Draggable draggableId={track.id} index={index} key={track.id}>
+                {(dragProvided) => (
+                  <motion.div
+                    ref={dragProvided.innerRef}
+                    {...dragProvided.draggableProps}
+                    {...(onReorder ? dragProvided.dragHandleProps : {})}
             className={`
               group flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer
               ${isCurrentTrack ? 'bg-primary-50 dark:bg-primary-900/20' : ''}
@@ -216,10 +239,16 @@ export const TrackList: React.FC<TrackListProps> = ({
                   ariaLabel="Supprimer le titre"
                 />
               )}
-            </div>
-          </motion.div>
-        );
-      })}
-    </div>
+                    </div>
+                  </motion.div>
+                )}
+              </Draggable>
+            );
+          })}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 };

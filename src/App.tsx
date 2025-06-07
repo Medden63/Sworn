@@ -285,6 +285,7 @@ function App() {
                     }}
                     onMoveTrackUp={(index) => handleReorderTracks(playlist.id, index, Math.max(0, index - 1))}
                     onMoveTrackDown={(index) => handleReorderTracks(playlist.id, index, Math.min(playlist.tracks.length - 1, index + 1))}
+                    onReorder={(from, to) => handleReorderTracks(playlist.id, from, to)}
                   />
                 </div>
               </div>
