@@ -6,6 +6,7 @@ import { Player } from './components/player/Player';
 import { AuthModal } from './components/auth/AuthModal';
 import { HomeContent } from './components/content/HomeContent';
 import { TrackList } from './components/content/TrackList';
+import { SettingsModal } from './components/settings/SettingsModal';
 import { Pencil, Trash } from 'lucide-react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useAudioPlayer } from './hooks/useAudioPlayer';
@@ -16,6 +17,7 @@ import { User, Track, Playlist } from './types';
 function App() {
   const [user, setUser] = useLocalStorage<User | null>('sworn-user', null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [isPlayerExpanded, setIsPlayerExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -121,6 +123,10 @@ function App() {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('sworn-user');
+  };
+
+  const handleUserUpdate = (updated: User) => {
+    setUser(updated);
   };
 
   const handleTrackSelect = (track: Track, trackList: Track[]) => {
@@ -396,6 +402,7 @@ function App() {
         onLogout={handleLogout}
         onFilesSelected={handleFilesSelected}
         onSearchChange={setSearchQuery}
+        onSettingsClick={() => setShowSettingsModal(true)}
       />
 
       <div className="flex flex-1 overflow-hidden">
@@ -436,6 +443,13 @@ function App() {
           />
         )}
       </AnimatePresence>
+
+      <SettingsModal
+        isOpen={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+        user={user}
+        onUserUpdate={handleUserUpdate}
+      />
 
       <AuthModal
         isOpen={showAuthModal}
