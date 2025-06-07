@@ -200,13 +200,26 @@ export const useAudioPlayer = () => {
   const toggleRepeat = useCallback(() => {
     setPlayerState(prev => ({
       ...prev,
-      repeatMode: prev.repeatMode === 'none' 
-        ? 'all' 
-        : prev.repeatMode === 'all' 
-        ? 'one' 
+      repeatMode: prev.repeatMode === 'none'
+        ? 'all'
+        : prev.repeatMode === 'all'
+        ? 'one'
         : 'none'
     }));
   }, []);
+
+  const playTrackAtIndex = useCallback(
+    async (index: number) => {
+      const track = playerState.queue[index];
+      if (!track) return;
+      setPlayerState(prev => ({ ...prev, currentIndex: index }));
+      loadTrack(track);
+      if (playerState.isPlaying) {
+        await play();
+      }
+    },
+    [playerState.queue, playerState.isPlaying, loadTrack, play]
+  );
 
   return {
     playerState,
@@ -222,5 +235,6 @@ export const useAudioPlayer = () => {
     toggleShuffle,
     toggleRepeat,
     loadTrack,
+    playTrackAtIndex,
   };
 };

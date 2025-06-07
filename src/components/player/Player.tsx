@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronUp, ChevronDown, Play, Pause } from 'lucide-react';
 import { PlayerControls } from './PlayerControls';
 import { NowPlaying } from './NowPlaying';
+import { Queue } from './Queue';
 import { Button } from '../common/Button';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 
@@ -22,7 +23,10 @@ export const Player: React.FC<PlayerProps> = ({ isExpanded, onToggleExpanded }) 
     toggleMute,
     toggleShuffle,
     toggleRepeat,
+    playTrackAtIndex,
   } = useAudioPlayer();
+
+  const [showQueue, setShowQueue] = useState(false);
 
   const handleToggleFavorite = () => {
     // This would update the track's favorite status
@@ -93,7 +97,26 @@ export const Player: React.FC<PlayerProps> = ({ isExpanded, onToggleExpanded }) 
                 onToggleShuffle={toggleShuffle}
                 onToggleRepeat={toggleRepeat}
                 onToggleFavorite={handleToggleFavorite}
+                isQueueVisible={showQueue}
+                onToggleQueue={() => setShowQueue(!showQueue)}
               />
+
+              <AnimatePresence>
+                {showQueue && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Queue
+                      tracks={playerState.queue}
+                      currentIndex={playerState.currentIndex}
+                      onSelect={playTrackAtIndex}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
         )}
