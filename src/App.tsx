@@ -11,6 +11,7 @@ import { PlaylistPage } from './components/content/PlaylistPage';
 import { SearchPage } from './components/content/SearchPage';
 import { TrendingPage } from './components/content/TrendingPage';
 import { RecentPage } from './components/content/RecentPage';
+import { AddedPage } from './components/content/AddedPage';
 import { SettingsModal } from './components/settings/SettingsModal';
 import { Pencil, Trash } from 'lucide-react';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -306,6 +307,18 @@ function App() {
             currentTrack={playerState.currentTrack}
             isPlaying={playerState.isPlaying}
             onTrackSelect={(track, index) => handleTrackSelect(track, recentHistory)}
+            onToggleFavorite={handleToggleFavorite}
+          />
+        );
+
+      case 'added':
+        const addedTracks = filterTracks([...tracks]).reverse();
+        return (
+          <AddedPage
+            tracks={addedTracks}
+            currentTrack={playerState.currentTrack}
+            isPlaying={playerState.isPlaying}
+            onTrackSelect={(track, index) => handleTrackSelect(track, addedTracks)}
             onToggleFavorite={handleToggleFavorite}
           />
         );
